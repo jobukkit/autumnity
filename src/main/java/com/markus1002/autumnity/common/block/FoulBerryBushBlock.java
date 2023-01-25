@@ -4,6 +4,7 @@ import java.util.Random;
 
 import com.markus1002.autumnity.core.registry.ModBlocks;
 import com.markus1002.autumnity.core.registry.ModEffects;
+import com.markus1002.autumnity.core.registry.ModEntities;
 import com.markus1002.autumnity.core.registry.ModItems;
 
 import net.minecraft.block.Block;
@@ -90,7 +91,7 @@ public class FoulBerryBushBlock extends BushBlock implements IGrowable
 
 	public void onEntityCollision(BlockState state, World worldIn, BlockPos pos, Entity entityIn)
 	{
-		if (entityIn instanceof LivingEntity && entityIn.getType() != EntityType.BEE)
+		if (entityIn instanceof LivingEntity && entityIn.getType() != EntityType.BEE && entityIn.getType() != ModEntities.SNAIL.get())
 		{
 			entityIn.setMotionMultiplier(state, new Vec3d((double)0.8F, 0.75D, (double)0.8F));
 			if (!worldIn.isRemote && state.get(AGE) == 1)
