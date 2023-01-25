@@ -63,23 +63,55 @@ public class PancakeBlock extends Block
 		}
 	}
 
+	@Override
 	public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit)
 	{
 		ItemStack itemstack = player.getHeldItem(handIn);
-		if (worldIn.isRemote)
+
+		if(player.isShiftKeyDown())
 		{
-			if (this.eatCake(worldIn, pos, state, player, itemstack) == ActionResultType.SUCCESS)
+			if (state.get(PANCAKES) > 1)
 			{
+				if (!worldIn.isRemote)
+				{
+					int i = state.get(PANCAKES);
+
+					spawnAsEntity(worldIn, pos, new ItemStack(this.asItem()));
+
+					if (i > 2)
+					{
+						worldIn.setBlockState(pos, state.with(PANCAKES, Integer.valueOf(i - 2)), 3);
+					}
+					else
+					{
+						worldIn.removeBlock(pos, false);
+					}
+				}
+
 				return ActionResultType.SUCCESS;
 			}
-
-			if (itemstack.isEmpty())
+			else
 			{
-				return ActionResultType.CONSUME;
+				return ActionResultType.PASS;
 			}
 		}
+		else
+		{
+			if (worldIn.isRemote)
+			{
+				if (this.eatCake(worldIn, pos, state, player, itemstack) == ActionResultType.SUCCESS)
+				{
+					return ActionResultType.SUCCESS;
+				}
 
-		return this.eatCake(worldIn, pos, state, player, itemstack);
+				if (itemstack.isEmpty())
+				{
+					return ActionResultType.CONSUME;
+				}
+			}
+
+			return this.eatCake(worldIn, pos, state, player, itemstack);
+		}
 	}
 
 	private ActionResultType eatCake(IWorld worldIn, BlockPos pos, BlockState state, PlayerEntity player, ItemStack itemstack)

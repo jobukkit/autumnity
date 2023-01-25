@@ -15,12 +15,7 @@ import com.markus1002.autumnity.core.registry.ModItems;
 import com.markus1002.autumnity.core.registry.ModSoundEvents;
 
 import net.minecraft.block.BlockState;
-import net.minecraft.entity.AgeableEntity;
-import net.minecraft.entity.EntitySize;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.Pose;
-import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.controller.LookController;
 import net.minecraft.entity.ai.controller.MovementController;
@@ -34,6 +29,7 @@ import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.MooshroomEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.AbstractArrowEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -45,6 +41,7 @@ import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.particles.ItemParticleData;
 import net.minecraft.particles.ParticleTypes;
+import net.minecraft.pathfinding.PathNodeType;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.Hand;
 import net.minecraft.util.SoundEvent;
@@ -100,6 +97,8 @@ public class SnailEntity extends AnimalEntity
 		super(type, worldIn);
 		this.lookController = new SnailEntity.LookHelperController();
 		this.moveController = new SnailEntity.MoveHelperController();
+		this.setPathPriority(PathNodeType.DANGER_CACTUS, 0.0F);
+		this.setPathPriority(PathNodeType.DAMAGE_CACTUS, 0.0F);
 	}
 
 	public SnailEntity(FMLPlayMessages.SpawnEntity packet, World worldIn)
@@ -150,8 +149,10 @@ public class SnailEntity extends AnimalEntity
 		return ModSoundEvents.ENTITY_SNAIL_HURT;
 	}
 
+	@Override
 	protected void playStepSound(BlockPos pos, BlockState blockIn)
 	{
+		this.playSound(ModSoundEvents.ENTITY_SNAIL_STEP, 0.4F, 1.0F);
 	}
 
 	public SoundEvent getEatSound(ItemStack itemStackIn)
@@ -368,6 +369,15 @@ public class SnailEntity extends AnimalEntity
 		}
 		else
 		{
+			Entity entity = source.getImmediateSource();
+			if (this.getHiding() && entity instanceof AbstractArrowEntity)
+			{
+				return false;
+			}
+			else if (source == DamageSource.CACTUS)
+			{
+				return false;
+			}
 			boolean flag = super.attackEntityFrom(source, amount);
 
 			if (!this.world.isRemote)

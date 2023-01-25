@@ -2,6 +2,7 @@ package com.markus1002.autumnity.common.block;
 
 import java.util.Random;
 
+import com.markus1002.autumnity.common.entity.passive.SnailEntity;
 import com.markus1002.autumnity.core.registry.ModBlocks;
 import com.markus1002.autumnity.core.registry.ModEffects;
 import com.markus1002.autumnity.core.registry.ModEntities;
@@ -14,10 +15,12 @@ import net.minecraft.block.IGrowable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.particles.ParticleTypes;
+import net.minecraft.pathfinding.PathNodeType;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
 import net.minecraft.state.IntegerProperty;
@@ -39,6 +42,8 @@ import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+
+import javax.annotation.Nullable;
 
 public class TallFoulBerryBushBlock extends DoublePlantBlock implements IGrowable
 {
@@ -189,5 +194,16 @@ public class TallFoulBerryBushBlock extends DoublePlantBlock implements IGrowabl
 				worldIn.setBlockState(pos.up(), worldIn.getBlockState(pos.up()).with(AGE, Integer.valueOf(age)), 2);
 			}
 		}
+	}
+
+	@Nullable
+	@Override
+	public PathNodeType getAiPathNodeType(BlockState state, IBlockReader world, BlockPos pos, @Nullable MobEntity entity)
+	{
+		if (!(entity instanceof SnailEntity))
+		{
+			return PathNodeType.DANGER_OTHER;
+		}
+		return super.getAiPathNodeType(state, world, pos, entity);
 	}
 }

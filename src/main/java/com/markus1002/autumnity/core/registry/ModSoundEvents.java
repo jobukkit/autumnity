@@ -14,6 +14,8 @@ public class ModSoundEvents
 	public static final SoundEvent ENTITY_SNAIL_EAT = new SoundEvent(Reference.location("entity.snail.eat"));
 	public static final SoundEvent ENTITY_SNAIL_HURT = new SoundEvent(Reference.location("entity.snail.hurt"));
 
+	public static final SoundEvent ENTITY_SNAIL_STEP = new SoundEvent(Reference.location("entity.snail.step"));
+
 	@SubscribeEvent
 	public static void registerSoundEvents(RegistryEvent.Register<SoundEvent> event)
 	{
